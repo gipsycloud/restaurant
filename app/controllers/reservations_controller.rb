@@ -18,6 +18,7 @@ class ReservationsController < ApplicationController
     def create
         @reservation = @restaurant.reservations.build(reservation_params)
         if @reservation.save
+						# SendReservationConfirmationJob.perform_later(@reservation)
             redirect_to [@restaurant, @reservation], notice: "Reservation was successfully created."
         else
             render :new, status: unprocessable_entity
