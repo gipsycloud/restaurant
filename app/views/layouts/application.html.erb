@@ -1,0 +1,108 @@
+<!-- app/views/layouts/application.html.erb -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= content_for?(:title) ? "#{yield(:title)} | " : "" %>The Garden Kitchen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Experience exquisite dining at The Garden Kitchen. Fresh ingredients, unforgettable flavors.">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  
+  <!-- External CSS -->
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  
+  <!-- Fonts & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  
+  <%= javascript_importmap_tags if respond_to?(:javascript_importmap_tags) %>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark nav-custom fixed-top shadow-lg">
+    <div class="container">
+      <%= link_to "The Garden Kitchen", root_path, class: "navbar-brand fw-bold fs-4" %>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item">
+            <%= link_to "Home", root_path, class: "nav-link #{current_page?(root_path) ? 'active text-gold' : ''}" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Menu", menu_path, class: "nav-link #{current_page?(menu_path) ? 'active text-gold' : ''}" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Contact", contact_path, class: "nav-link #{current_page?(contact_path) ? 'active text-gold' : ''}" %>
+          </li>
+          <li class="nav-item ms-lg-3">
+            <%= link_to new_reservation_path, class: "btn btn-gold px-4" do %>
+              <i class="bi bi-calendar2-check me-1"></i> Book a Table
+            <% end %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    <%= yield %>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer-main text-white pt-5 pb-4">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <h4 class="text-gold">The Garden Kitchen</h4>
+          <p class="text-secondary mt-3" style="font-size: 0.9rem; line-height: 1.8;">
+            Experience culinary excellence where traditional recipes meet modern flair. Farm-to-table freshness in every bite.
+          </p>
+          <div class="footer-social mt-4">
+            <a href="#"><i class="bi bi-facebook"></i></a>
+            <a href="#"><i class="bi bi-instagram"></i></a>
+            <a href="#"><i class="bi bi-twitter-x"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <h5 class="mb-4 text-uppercase" style="font-size: 0.9rem; letter-spacing: 1px;">Opening Hours</h5>
+          <ul class="footer-links">
+            <li class="d-flex justify-content-between text-secondary" style="font-size: 0.9rem;">
+              <span>Monday - Friday</span>
+              <span>10:00 AM - 10:00 PM</span>
+            </li>
+            <li class="d-flex justify-content-between text-secondary" style="font-size: 0.9rem;">
+              <span>Saturday - Sunday</span>
+              <span>09:00 AM - 11:00 PM</span>
+            </li>
+          </ul>
+        </div>
+        <div class="col-lg-4">
+          <h5 class="mb-4 text-uppercase" style="font-size: 0.9rem; letter-spacing: 1px;">Contact Info</h5>
+          <ul class="footer-links">
+            <li class="text-secondary" style="font-size: 0.9rem;">
+              <i class="bi bi-geo-alt text-gold me-2"></i> 123 Main Street, Makati City
+            </li>
+            <li class="text-secondary" style="font-size: 0.9rem;">
+              <i class="bi bi-telephone text-gold me-2"></i> +63 917 123 4567
+            </li>
+            <li class="text-secondary" style="font-size: 0.9rem;">
+              <i class="bi bi-envelope text-gold me-2"></i> info@gardenkitchen.ph
+            </li>
+          </ul>
+        </div>
+      </div>
+      <hr class="border-secondary mt-4" style="opacity: 0.2;">
+      <div class="text-center text-secondary small mt-3">
+        &copy; <%= Date.today.year %> The Garden Kitchen. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

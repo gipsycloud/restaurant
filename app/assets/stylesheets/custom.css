@@ -1,0 +1,341 @@
+/* app/assets/stylesheets/custom.css */
+
+/* ==========================================
+   FONTS & BASE STYLES
+   ========================================== */
+body { 
+  font-family: 'Lato', sans-serif; 
+  color: #e0e0e0; 
+  background-color: #121212; /* Deep dark background */
+}
+
+h1, h2, h3, h4, h5 { 
+  font-family: 'Playfair Display', serif; 
+}
+
+a {
+  text-decoration: none;
+}
+
+/* ==========================================
+   COLORS & ACCENTS
+   ========================================== */
+.text-gold { 
+  color: #c5a059; 
+}
+
+.bg-gold { 
+  background-color: #c5a059 !important; 
+}
+
+.bg-dark-custom { 
+  background-color: #1a1a1a; 
+}
+
+.border-gold { 
+  border-color: #c5a059 !important; 
+}
+
+.section-divider {
+  width: 60px;
+  height: 2px;
+  background-color: #c5a059;
+}
+
+/* ==========================================
+   NAVBAR
+   ========================================== */
+.nav-custom { 
+  background: rgba(18, 18, 18, 0.95); 
+  backdrop-filter: blur(15px); 
+  border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+  padding: 15px 0;
+  transition: all 0.3s ease;
+}
+
+.nav-custom .navbar-brand {
+  letter-spacing: 1px;
+}
+
+.nav-custom .nav-link {
+  color: #aaa !important;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 8px 15px !important;
+  transition: color 0.3s ease;
+}
+
+.nav-custom .nav-link:hover,
+.nav-custom .nav-link.active {
+  color: #c5a059 !important;
+}
+
+/* ==========================================
+   BUTTONS
+   ========================================== */
+.btn-gold { 
+  background-color: #c5a059; 
+  color: #fff; 
+  border: 1px solid #c5a059;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border-radius: 0;
+}
+
+.btn-gold:hover { 
+  background-color: transparent; 
+  color: #c5a059; 
+  transform: translateY(-2px);
+}
+
+.btn-gold:active {
+  transform: translateY(0);
+}
+
+.btn-outline-light {
+  border-radius: 0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.btn-outline-secondary {
+  border-radius: 0;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
+
+/* ==========================================
+   HERO SECTION
+   ========================================== */
+.hero-bg {
+  /* Using the provided image URL */
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.8)), 
+              url('https://z-cdn-media.chatglm.cn/files/06003678-4b34-48d9-9626-ac77d80ee807.png?auth_key=1884483962-fe6b63a394a84a528e74a75ca24820ee-0-39e67950a435774d258348fa536cf562') center/cover no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.hero-bg .display-2 {
+  font-size: 4rem;
+}
+
+@media (max-width: 768px) {
+  .hero-bg .display-2 {
+    font-size: 2.5rem;
+  }
+  .hero-bg .lead {
+    font-size: 1rem;
+  }
+}
+
+/* ==========================================
+   MENU STYLES (Fine Dining Layout)
+   ========================================== */
+.menu-item-row {
+  display: flex;
+  align-items: center;
+  padding: 18px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.menu-item-row:hover {
+  background-color: rgba(197, 160, 89, 0.05);
+  padding-left: 20px;
+}
+
+.menu-item-row h5 {
+  font-size: 1.05rem;
+  margin-bottom: 3px;
+}
+
+.menu-item-row p {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* Elegant Dots leading to price */
+.menu-dots {
+  border-bottom: 1px dotted #555;
+  flex-grow: 1;
+  margin: 0 15px;
+  position: relative;
+  top: -6px;
+}
+
+/* Menu Category Navigation */
+.menu-nav-link {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  border-color: #444;
+  color: #aaa;
+  border-radius: 0;
+  padding: 8px 20px !important;
+}
+
+.menu-nav-link:hover,
+.menu-nav-link.active {
+  background-color: #c5a059;
+  border-color: #c5a059;
+  color: #fff;
+}
+
+/* ==========================================
+   FEATURED DISHES CARDS
+   ========================================== */
+.dish-card {
+  background-color: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  height: 100%;
+}
+
+.dish-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(197, 160, 89, 0.3);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+}
+
+.dish-card-img {
+  height: 280px;
+  background-color: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dish-card-body {
+  padding: 25px;
+}
+
+.dish-card-body h5 {
+  font-size: 1.1rem;
+}
+
+/* ==========================================
+   FORM STYLES (Reservation)
+   ========================================== */
+.form-control,
+.form-select {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  border-radius: 0;
+  padding: 12px 15px;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: #1a1a1a;
+  border-color: #c5a059;
+  color: #e0e0e0;
+  box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.15);
+}
+
+.form-control::placeholder {
+  color: #666;
+}
+
+.input-group-text {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  color: #c5a059;
+  border-radius: 0;
+}
+
+.form-label {
+  color: #aaa;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+/* ==========================================
+   FOOTER
+   ========================================== */
+.footer-main {
+  background-color: #0a0a0a;
+  border-top: 1px solid rgba(197, 160, 89, 0.2);
+}
+
+.footer-main h4,
+.footer-main h5 {
+  color: #fff;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li {
+  margin-bottom: 12px;
+}
+
+.footer-links a {
+  color: #777;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #c5a059;
+}
+
+.footer-social a {
+  color: #777;
+  font-size: 1.2rem;
+  margin-right: 15px;
+  transition: color 0.3s ease;
+}
+
+.footer-social a:hover {
+  color: #c5a059;
+}
+
+/* ==========================================
+   SCROLLBAR STYLING (Webkit)
+   ========================================== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #121212;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c5a059;
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.8s ease forwards;
+}

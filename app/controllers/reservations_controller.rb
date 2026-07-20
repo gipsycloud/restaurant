@@ -1,6 +1,6 @@
 class ReservationsController < ApplicationController
     before_action :set_restaurant
-    before_action :set_reservation, only: [:show, :edit, :update,
+    before_action :set_reservation, only: [:show, :new, :edit, :update]
 
     def index
         @reservations = @restaurant.reservations.includes(:table)
