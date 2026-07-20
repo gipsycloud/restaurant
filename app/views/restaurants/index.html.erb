@@ -1,0 +1,31 @@
+<% content_for :title, "Restaurants" %>
+
+<section class="py-5 mt-5">
+  <div class="container py-4">
+    <div class="d-flex align-items-end justify-content-between gap-3 mb-4">
+      <div>
+        <p class="text-uppercase text-muted small mb-1">Directory</p>
+        <h1 class="h2 fw-bold mb-0">All restaurants</h1>
+      </div>
+      <span class="text-muted"><%= pluralize(@restaurants.size, "restaurant") %></span>
+    </div>
+
+    <div class="row g-4">
+      <% @restaurants.each do |restaurant| %>
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h2 class="h5 fw-bold mb-3"><%= restaurant.name %></h2>
+              <p class="mb-2 text-muted"><%= restaurant.address %></p>
+              <p class="mb-4 text-muted"><%= restaurant.phone %></p>
+
+              <div class="mt-auto">
+                <%= link_to "View details", restaurant_path(restaurant), class: "btn btn-dark" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

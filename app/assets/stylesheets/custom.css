@@ -115,7 +115,7 @@ a {
 .hero-bg {
   /* Using the provided image URL */
   background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.8)), 
-              url('https://z-cdn-media.chatglm.cn/files/06003678-4b34-48d9-9626-ac77d80ee807.png?auth_key=1884483962-fe6b63a394a84a528e74a75ca24820ee-0-39e67950a435774d258348fa536cf562') center/cover no-repeat;
+              url('https://cdn.babyseo.ai/images/foodshot.ai/food-background-wallpaper/dark-chalkboard-food-marketing-background.webp') center/cover no-repeat;
   min-height: 100vh;
   display: flex;
   align-items: center;

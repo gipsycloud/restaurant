@@ -1,0 +1,28 @@
+<% content_for :title, @restaurant.name %>
+
+<section class="py-5 mt-5">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4 p-md-5">
+            <p class="text-uppercase text-muted small mb-2">Restaurant</p>
+            <h1 class="h2 fw-bold mb-4"><%= @restaurant.name %></h1>
+
+            <dl class="row mb-0">
+              <dt class="col-sm-3 text-muted">Address</dt>
+              <dd class="col-sm-9"><%= @restaurant.address %></dd>
+
+              <dt class="col-sm-3 text-muted">Phone</dt>
+              <dd class="col-sm-9"><%= @restaurant.phone %></dd>
+            </dl>
+
+            <div class="mt-4">
+              <%= link_to "Back to restaurants", restaurants_path, class: "btn btn-outline-dark" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
