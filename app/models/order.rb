@@ -1,13 +1,13 @@
 class Order < ApplicationRecord
   belongs_to :table
-  belongs_to :reservation
+  belongs_to :reservation, optional: true
   has_many :order_items, dependent: :destroy
   has_many :menus, through: :order_items
   has_one :payment, dependent: :destroy
   has_one :receipt, dependent: :destroy
 
-  validates :status: presence: true
-  validated :total_amount, numericality: { greather_than_or_equal_to: 0 }
+  validates :status, presence: true
+  validates :total_amount, numericality: { greater_than_or_equal_to: 0 }
 
   enum status: { pending: 0, confirmed: 1, preparing: 2, ready: 3, completed: 4, cancelled: 5 }
   enum payment_status: { unpaid: 0, paid: 1, refunde: 2 }

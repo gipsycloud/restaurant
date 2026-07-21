@@ -6,7 +6,7 @@ class Reservation < ApplicationRecord
   validates :customer_name, presence: true
   validates :phone, presence: true
   validates :guest_count, presence: true, numericality: { greater_than: 0 }
-  validetes :reserved_at, presence: true
+  validates :reserved_at, presence: true
 
   enum status: { pending: 0, confirmed: 1, cancelled: 2 }
 

@@ -49,4 +49,5 @@ end
 gem 'dotenv-rails', groups: [:development, :test]
 gem 'bootstrap', '>= 5.3.8'
 gem 'sprockets-rails'   
-gem 'sassc-rails'       
+gem 'sassc-rails'
+gem 'faker'    
