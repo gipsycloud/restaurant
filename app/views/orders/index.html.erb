@@ -1,0 +1,240 @@
+<% content_for :title, "Orders" %>
+
+<% total_orders = @restaurant.orders.count %>
+<% pending_orders = @restaurant.orders.pending.count %>
+<% preparing_orders = @restaurant.orders.preparing.count %>
+<% ready_orders = @restaurant.orders.ready.count %>
+<% completed_orders = @restaurant.orders.completed.count %>
+<% today_orders = @restaurant.orders.where(created_at: Time.zone.today.beginning_of_day..Time.zone.today.end_of_day).count %>
+
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+  <div>
+    <p class="text-uppercase text-muted small mb-1">Kitchen workflow</p>
+    <h2 class="mb-1">Orders</h2>
+    <p class="text-muted mb-0">
+      Track every ticket from prep to completion, with quick actions for the kitchen team.
+    </p>
+  </div>
+
+  <div class="d-flex gap-2 flex-wrap">
+    <%= link_to restaurant_orders_path(@restaurant), class: "btn btn-outline-secondary" do %>
+      <i class="bi bi-arrow-clockwise me-1"></i> Reset filters
+    <% end %>
+    <%= link_to restaurant_orders_path(@restaurant, status: "pending"), class: "btn btn-dark" do %>
+      <i class="bi bi-lightning-charge-fill me-1"></i> Pending queue
+    <% end %>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6 col-xl-2">
+    <div class="card border-0 shadow-sm bg-dark text-white h-100">
+      <div class="card-body">
+        <small class="text-white-50 d-block mb-2">Total orders</small>
+        <div class="d-flex justify-content-between align-items-end">
+          <h3 class="mb-0 fw-bold"><%= total_orders %></h3>
+          <i class="bi bi-receipt fs-2 opacity-50"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-2">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <small class="text-muted d-block mb-2">Today</small>
+        <div class="d-flex justify-content-between align-items-end">
+          <h3 class="mb-0 fw-bold text-primary"><%= today_orders %></h3>
+          <i class="bi bi-calendar-day fs-2 text-primary opacity-50"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-2">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <small class="text-muted d-block mb-2">Pending</small>
+        <div class="d-flex justify-content-between align-items-end">
+          <h3 class="mb-0 fw-bold text-warning"><%= pending_orders %></h3>
+          <i class="bi bi-hourglass-split fs-2 text-warning opacity-50"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-2">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <small class="text-muted d-block mb-2">Preparing</small>
+        <div class="d-flex justify-content-between align-items-end">
+          <h3 class="mb-0 fw-bold text-info"><%= preparing_orders %></h3>
+          <i class="bi bi-fire fs-2 text-info opacity-50"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-2">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <small class="text-muted d-block mb-2">Ready</small>
+        <div class="d-flex justify-content-between align-items-end">
+          <h3 class="mb-0 fw-bold text-success"><%= ready_orders %></h3>
+          <i class="bi bi-check2-circle fs-2 text-success opacity-50"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-2">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <small class="text-muted d-block mb-2">Completed</small>
+        <div class="d-flex justify-content-between align-items-end">
+          <h3 class="mb-0 fw-bold text-secondary"><%= completed_orders %></h3>
+          <i class="bi bi-bag-check fs-2 text-secondary opacity-50"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
+      <div>
+        <h5 class="mb-1">Filter by status</h5>
+        <p class="text-muted mb-0">Quickly jump to the queue you need to manage.</p>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2">
+        <% Order.statuses.keys.each do |status| %>
+          <%= link_to restaurant_orders_path(@restaurant, status: status),
+              class: "btn #{params[:status] == status ? 'btn-dark' : 'btn-outline-dark'} rounded-pill" do %>
+            <%= status.humanize %>
+            <span class="badge text-bg-light ms-1"><%= @restaurant.orders.public_send(status).count %></span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <% if @orders.any? %>
+    <% @orders.each do |order| %>
+      <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100 order-card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+              <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <h5 class="mb-0">Order #<%= order.id %></h5>
+                  <span class="badge <%= order_status_badge(order.status) %>"><%= order.status.humanize %></span>
+                  <span class="badge <%= payment_status_badge(order.payment_status) %>"><%= order.payment_status.humanize %></span>
+                </div>
+                <div class="text-muted small">
+                  <i class="bi bi-people me-1"></i>
+                  <%= order.reservation&.customer_name.presence || "Walk-in guest" %>
+                  <span class="mx-2">•</span>
+                  <i class="bi bi-table me-1"></i>
+                  <%= order.table&.table_number.present? ? "Table #{order.table.table_number}" : "No table" %>
+                </div>
+              </div>
+
+              <div class="text-end">
+                <div class="fw-bold fs-5 text-success">
+                  ₱<%= number_with_precision(order.total_amount || 0, precision: 2) %>
+                </div>
+                <small class="text-muted"><%= time_ago_in_words(order.created_at) %> ago</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="d-flex justify-content-between text-muted small mb-1">
+                <span>Items</span>
+                <span><%= order.order_items.size %></span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <% progress_width =
+                  case order.status
+                  when "pending" then 20
+                  when "confirmed" then 35
+                  when "preparing" then 60
+                  when "ready" then 85
+                  when "completed" then 100
+                  else 10
+                  end %>
+                <div class="progress-bar bg-dark" style="width: <%= progress_width %>%"></div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="fw-semibold mb-1">Items summary</div>
+              <p class="text-muted mb-0">
+                <%= truncate(order.menus.map(&:name).join(", "), length: 90) %>
+              </p>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+              <%= link_to restaurant_order_path(@restaurant, order), class: "btn btn-outline-primary btn-sm" do %>
+                <i class="bi bi-eye me-1"></i> View details
+              <% end %>
+
+              <% if order.pending? %>
+                <%= button_to restaurant_order_path(@restaurant, order),
+                      method: :patch,
+                      params: { order: { status: "preparing" } },
+                      class: "btn btn-info btn-sm text-white" do %>
+                  <i class="bi bi-play-fill me-1"></i> Start prep
+                <% end %>
+              <% end %>
+
+              <% if order.preparing? %>
+                <%= button_to restaurant_order_path(@restaurant, order),
+                      method: :patch,
+                      params: { order: { status: "ready" } },
+                      class: "btn btn-success btn-sm" do %>
+                  <i class="bi bi-check2-circle me-1"></i> Mark ready
+                <% end %>
+              <% end %>
+
+              <% if order.ready? %>
+                <%= button_to restaurant_order_path(@restaurant, order),
+                      method: :patch,
+                      params: { order: { status: "completed" } },
+                      class: "btn btn-outline-dark btn-sm" do %>
+                  <i class="bi bi-bag-check me-1"></i> Complete
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+          <i class="bi bi-inbox fs-1 text-muted mb-3 d-block"></i>
+          <h4 class="mb-2">No orders found</h4>
+          <p class="text-muted mb-0">
+            Try a different filter or wait for the next ticket to arrive.
+          </p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  .order-card {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .order-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.08) !important;
+  }
+</style>

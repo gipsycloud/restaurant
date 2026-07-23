@@ -12,8 +12,11 @@ class Order < ApplicationRecord
   enum status: { pending: 0, confirmed: 1, preparing: 2, ready: 3, completed: 4, cancelled: 5 }
   enum payment_status: { unpaid: 0, paid: 1, refunde: 2 }
 
+  scope :by_status, ->(status) { where(status: status) }
+
   def calculate_total!
     total = order_items.sum(:subtotal)
     update!(total_amount: total )
   end
+  
 end

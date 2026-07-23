@@ -11,7 +11,11 @@ Rails.application.routes.draw do
   resources :restaurants, only: [:index, :show] do
     resources :users, only: [:index, :show, :new, :create, :edit, :update, :destroy]
     resources :menu, only: [:index, :show, :new, :create, :edit, :update, :destroy]
-    resources :tables, only: [:index, :show, :new, :create, :edit, :update]
+    resources :tables, only: [:index, :show, :new, :create, :edit, :update, :destroy] do
+      member do
+        patch :update_status
+      end
+    end
     resources :reservations, only: [:index, :show, :new, :create, :edit, :update, :destroy]
     resources :orders, only: [:index, :show, :new, :create, :update] do
       collection do
@@ -22,3 +26,10 @@ Rails.application.routes.draw do
     end
   end
 end
+
+
+
+# The "API Mode" Trap
+# When you created this current project, did you use the --api flag?
+# Example: rails new resto_app --api
+# If you did, Rails sometimes encourages you to skip :new and :edit because APIs don't use HTML forms. However, the router still generates them unless you explicitly tell it not to.

@@ -1,0 +1,41 @@
+<!-- app/views/admin/tables/index.html.erb -->
+<% content_for :title, "Tables Management" %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-0 text-white"><i class="bi bi-grid-3x3-gap text-gold me-2"></i>Tables</h4>
+    <small class="text-secondary">Manage restaurant floor plan and availability</small>
+  </div>
+</div>
+
+<!-- Legend -->
+<div class="d-flex gap-3 mb-4">
+  <small><span class="badge bg-success">Available</span></small>
+  <small><span class="badge bg-warning text-dark">Reserved</span></small>
+  <small><span class="badge bg-danger">Occupied</span></small>
+</div>
+
+<!-- Tables Grid -->
+<div class="row g-3">
+  <% @tables.each do |table| %>
+    <div class="col-lg-3 col-md-4 col-sm-6">
+      <div class="card bg-dark-custom border-0 h-100">
+        <div class="card-body text-center py-4">
+          <h2 class="text-white mb-2">T<%= table.table_number %></h2>
+          <p class="text-muted mb-2"><i class="bi bi-people me-1"></i> <%= table.capacity %> Pax</p>
+          
+          <span class="badge <%= table.status == 'available' ? 'bg-success' : (table.status == 'occupied' ? 'bg-danger' : 'bg-warning text-dark') %> fs-6">
+            <%= table.status.upcase %>
+          </span>
+
+          <!-- Show quick info based on Schema relations -->
+          <% if table.reservations.confirmed.exists? %>
+            <p class="text-warning mt-3 mb-0" style="font-size: 0.8rem;">
+              <i class="bi bi-clock me-1"></i> Reserved: <%= table.reservations.confirmed.last.reserved_at.strftime('%I:%M %p') %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

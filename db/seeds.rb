@@ -42,7 +42,7 @@ ActiveRecord::Base.transaction do
   end
 
   restaurants.each do |rest|
-    rand(8..12).times do |i|
+    rand(2..4).times do |i|
       rest.tables.create!(
         table_number: i + 1,
         capacity: [2, 4, 4, 4, 6, 8].sample,
@@ -53,7 +53,7 @@ ActiveRecord::Base.transaction do
 
   categories = ["Appetizer", "Main Course", "Beverage", "Dessert", "Burmese Special"]
   restaurants.each do |rest|
-    rand(20..35).times do
+    rand(10..15).times do
       rest.menus.create!(
         name: Faker::Food.dish,
         description: Faker::Food.description,
@@ -69,7 +69,7 @@ ActiveRecord::Base.transaction do
     available_menus = rest.menus.available.to_a
     
     # Create 40 to 60 orders per restaurant over the last 30 days
-    rand(20..30).times do
+    rand(10..15).times do
       table = available_tables.sample
       created_time = Faker::Time.between(from: 30.days.ago, to: Time.current)
       
@@ -138,23 +138,4 @@ ActiveRecord::Base.transaction do
       end
     end
   end
-
-  # ==========================================
-  # FINAL REPORT
-  # ==========================================
-  puts "\n" + "=" * 50
-  puts "✅ FAKE DATA SUCCESSFULLY GENERATED!"
-  puts "=" * 50
-  puts "Restaurants:  #{Restaurant.count}"
-  puts "Users:        #{User.count}"
-  puts "Tables:       #{Table.count}"
-  puts "Menu Items:   #{Menu.count}"
-  puts "Reservations: #{Reservation.count}"
-  puts "Orders:       #{Order.count}"
-  puts "Order Items:  #{OrderItem.count}"
-  puts "Payments:     #{Payment.count}"
-  puts "Receipts:     #{Receipt.count}"
-  puts "=" * 50
-  puts "📈 Total System Revenue: $#{Order.joins(:payment).where(payments: {status: :successful}).sum(:total_amount).round(2)}"
-  puts "=" * 50
 end
