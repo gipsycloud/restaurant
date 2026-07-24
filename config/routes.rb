@@ -1,7 +1,10 @@
+require "sidekiq/web"
+
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
+  mount Sidekiq::Web => "/sidekiq"
   root "pages#home"
   get '/menu', to: 'menu#index', as: :menu
   # get '/reservation', to: 'reservations#new', as: :new_reservation
@@ -32,4 +35,5 @@ end
 # The "API Mode" Trap
 # When you created this current project, did you use the --api flag?
 # Example: rails new resto_app --api
-# If you did, Rails sometimes encourages you to skip :new and :edit because APIs don't use HTML forms. However, the router still generates them unless you explicitly tell it not to.
+# If you did, Rails sometimes encourages you to skip :new and :edit because APIs don't use HTML forms. 
+# However, the router still generates them unless you explicitly tell it not to.

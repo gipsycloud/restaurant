@@ -53,3 +53,10 @@ gem 'bootstrap', '>= 5.3.8'
 gem 'sprockets-rails'   
 gem 'sassc-rails'
 gem 'faker'    
+
+gem "sidekiq", "~> 7.3"
+
+gem "redis", "~> 5.4"
+
+gem "prawn", "~> 2.4"
+gem "matrix"
