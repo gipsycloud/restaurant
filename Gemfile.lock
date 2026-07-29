@@ -106,6 +106,8 @@ GEM
     faker (3.8.0)
       i18n (>= 1.8.11, < 2)
     ffi (1.17.4-x86_64-linux-gnu)
+    foreman (0.90.0)
+      thor (~> 1.4)
     globalid (1.4.0)
       activesupport (>= 6.1)
     i18n (1.15.2)
@@ -257,6 +259,7 @@ DEPENDENCIES
   debug
   dotenv-rails
   faker
+  foreman (~> 0.90.0)
   matrix
   pg (~> 1.1)
   prawn (~> 2.4)

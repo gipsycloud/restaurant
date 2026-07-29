@@ -3,6 +3,7 @@
   - default
   - mailers
   - reports
+  - pdfs
 
 # :schedule:
 #   cleanup_old_reservations:

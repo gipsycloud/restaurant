@@ -11,7 +11,7 @@ class OrdersController < ApplicationController
 	end
 
 	def show
-		@order_items = @order.includes(:order_items, :table, :payment)
+		# @order = @restaurant.orders.find(params[:id])
 	end
 
 	def new
@@ -43,14 +43,21 @@ class OrdersController < ApplicationController
 		redirect_to restaurant_orders_path(@restaurant), notice: 'Order was successfully destroyed.'
 	end
 
-	private
+	def generate_receipt
+		@order = Order.find(params[:id])
 
-	def set_order
-		@order = @restaurant.orders.find(params[:id])
+		ReceiptJob.perform_async(@order.id)
+		redirect_to restaurant_order_path(@restaurant, @order), notice: "Receipt is generating."
 	end
+
+	private
 
 	def set_restaurant
 		@restaurant = Restaurant.find(params[:restaurant_id])
+	end
+
+	def set_order
+		@order = Order.find(params[:id])
 	end
 
 	def order_params

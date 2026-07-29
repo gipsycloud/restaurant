@@ -7,8 +7,6 @@ Rails.application.routes.draw do
   mount Sidekiq::Web => "/sidekiq"
   root "pages#home"
   get '/menu', to: 'menu#index', as: :menu
-  # get '/reservation', to: 'reservations#new', as: :new_reservation
-  # post '/reservation', to: 'reservations#create', as: :reservations
   get '/contact', to: 'pages#contact', as: :contact
   
   resources :restaurants, only: [:index, :show] do
@@ -21,6 +19,9 @@ Rails.application.routes.draw do
     end
     resources :reservations, only: [:index, :show, :new, :create, :edit, :update, :destroy]
     resources :orders, only: [:index, :show, :new, :create, :update] do
+      member do
+        post :generate_receipt
+      end
       collection do
         get :export
       end
@@ -31,6 +32,8 @@ Rails.application.routes.draw do
 end
 
 
+# get '/reservation', to: 'reservations#new', as: :new_reservation
+# post '/reservation', to: 'reservations#create', as: :reservations
 
 # The "API Mode" Trap
 # When you created this current project, did you use the --api flag?
