@@ -32,3 +32,4 @@
 .env# Ignore environment files
 .env
 .env.*
+/public/receipts/*

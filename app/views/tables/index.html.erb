@@ -1,8 +1,9 @@
 <% content_for :title, "Tables Management" %>
 
-<% available_tables = @tables.count(&:available?) %>
-<% reserved_tables = @tables.count(&:reserved?) %>
-<% occupied_tables = @tables.count(&:occupied?) %>
+<% all_tables = @all_tables || @tables %>
+<% available_tables = all_tables.count(&:available?) %>
+<% reserved_tables = all_tables.count(&:reserved?) %>
+<% occupied_tables = all_tables.count(&:occupied?) %>
 
 <div class="tables-page">
   <div class="container py-5">
@@ -18,7 +19,7 @@
           </div>
         </div>
       </div>
-      <div class="table-summary-total"><strong><%= @tables.size %></strong><span>Total<br>tables</span></div>
+      <div class="table-summary-total"><strong><%= all_tables.size %></strong><span>Total<br>tables</span></div>
     </div>
 
     <div class="row g-3 mb-4">
@@ -32,10 +33,20 @@
         <p class="tables-eyebrow mb-1">Floor plan</p>
         <h2 class="h5 mb-0">All tables</h2>
       </div>
-      <div class="tables-legend">
-        <span><i class="available-dot"></i> Available</span>
-        <span><i class="reserved-dot"></i> Reserved</span>
-        <span><i class="occupied-dot"></i> Occupied</span>
+      <div class="tables-controls">
+        <div class="table-filter-list">
+          <%= link_to "All", restaurant_tables_path(@restaurant), class: "table-filter #{'active' if params[:status].blank?}" %>
+          <% Table.statuses.keys.each do |status| %>
+            <%= link_to restaurant_tables_path(@restaurant, status: status), class: "table-filter #{'active' if params[:status] == status}" do %>
+              <%= status.humanize %><span><%= all_tables.count { |table| table.status == status } %></span>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="tables-legend">
+          <span><i class="available-dot"></i> Available</span>
+          <span><i class="reserved-dot"></i> Reserved</span>
+          <span><i class="occupied-dot"></i> Occupied</span>
+        </div>
       </div>
     </div>
 
@@ -43,6 +54,7 @@
       <div class="row g-3">
         <% @tables.each do |table| %>
           <% confirmed_reservation = table.reservations.select(&:confirmed?).max_by(&:reserved_at) %>
+          <% active_orders = table.orders.reject { |order| order.completed? || order.cancelled? } %>
           <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
             <article class="table-card table-card-<%= table.status %> h-100">
               <div class="table-card-head">
@@ -52,16 +64,17 @@
               <div class="table-card-body">
                 <div class="table-capacity"><i class="bi bi-people"></i><strong><%= table.capacity %></strong><span>guest capacity</span></div>
                 <% if confirmed_reservation %>
-                  <div class="table-note table-note-reserved"><i class="bi bi-clock"></i><span>Reserved for <strong><%= confirmed_reservation.reserved_at.strftime('%I:%M %p') %></strong></span></div>
+                  <div class="table-note table-note-reserved"><i class="bi bi-clock"></i><span><strong><%= confirmed_reservation.customer_name %></strong> · <%= confirmed_reservation.reserved_at.strftime('%I:%M %p') %> · <%= pluralize(confirmed_reservation.guest_count, 'guest') %></span></div>
                 <% elsif table.occupied? %>
-                  <div class="table-note table-note-occupied"><i class="bi bi-person-fill"></i><span>Currently in service</span></div>
+                  <div class="table-note table-note-occupied"><i class="bi bi-person-fill"></i><span>In service · <%= pluralize(active_orders.size, 'active order') %></span></div>
                 <% else %>
                   <div class="table-note table-note-available"><i class="bi bi-check2"></i><span>Ready for guests</span></div>
                 <% end %>
               </div>
               <div class="table-card-footer">
-                <%= link_to restaurant_table_path(@restaurant, table), class: "table-view-link" do %>
-                  View table <i class="bi bi-arrow-up-right"></i>
+                <%= link_to restaurant_table_path(@restaurant, table), class: "table-view-link" do %>View table <i class="bi bi-arrow-up-right"></i><% end %>
+                <%= form_with url: update_status_restaurant_table_path(@restaurant, table), method: :patch, local: true, class: "table-status-form" do %>
+                  <%= select_tag :status, options_for_select(Table.statuses.keys.map { |status| [status.humanize, status] }, table.status), class: "table-status-select", aria: { label: "Change table status" }, onchange: "this.form.requestSubmit()" %>
                 <% end %>
               </div>
             </article>

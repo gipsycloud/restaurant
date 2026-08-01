@@ -1,8 +1,18 @@
 class TablesController < ApplicationController
 	before_action :set_restaurant
-	before_action :set_table, only: [:show, :edit, :update, :destroy]
+	before_action :set_table, only: [:show, :edit, :update, :destroy, :update_status]
 	def index
-		@tables = @restaurant.tables.includes(:reservations, :orders).order(:table_number)
+		@all_tables = @restaurant.tables.includes(:reservations, :orders).order(:table_number)
+		@tables = params[:status].present? ? @all_tables.select { |table| table.status == params[:status] } : @all_tables
+	end
+
+	def update_status
+		status = params[:status].to_s
+		if Table.statuses.key?(status) && @table.update(status: status)
+			redirect_to restaurant_tables_path(@restaurant), notice: "Table #{@table.table_number} is now #{status}."
+		else
+			redirect_to restaurant_tables_path(@restaurant), alert: "That table status could not be updated."
+		end
 	end
 
 	def show

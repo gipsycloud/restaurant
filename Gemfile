@@ -62,3 +62,4 @@ gem "prawn", "~> 2.4"
 gem "matrix"
 
 gem "foreman", "~> 0.90.0"
+gem "bullet"
