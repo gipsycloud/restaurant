@@ -1,27 +1,87 @@
-<div class="mt-4 border-top border-secondary pt-3">
-  <h6 class="text-white mb-3"><i class="bi bi-file-earmark-pdf text-gold me-2"></i>Receipt (Schema: receipts)</h6>
-  
-  <% if @order.receipt.present? %>
-    <!-- If the job finished and the DB record exists -->
-    <div class="d-flex justify-content-between align-items-center bg-dark p-3 rounded border border-secondary">
+<% content_for :title, "Order ##{@order.id}" %>
+
+<% item_subtotal = @order.order_items.sum { |item| item.subtotal || ((item.unit_price || 0) * item.quantity.to_i) } %>
+<% customer_name = @order.reservation&.customer_name.presence || "Walk-in guest" %>
+
+<div class="orders-page order-detail-page">
+  <div class="container py-5">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-4 mb-4">
       <div>
-        <small class="text-success"><i class="bi bi-check-circle me-1"></i>Generated</small><br>
-        <small class="text-muted"><i class="bi bi-clock me-1"></i><%= @order.receipt.generated_at.strftime('%b %d, %I:%M %p') %></small>
+        <%= link_to restaurant_orders_path(@restaurant), class: "orders-back-link" do %><i class="bi bi-arrow-left me-2"></i> Back to orders<% end %>
+        <div class="d-flex align-items-center gap-3 mt-4">
+          <div class="order-detail-icon"><i class="bi bi-receipt"></i></div>
+          <div>
+            <p class="orders-eyebrow mb-1">Order details</p>
+            <h1 class="mb-1">Order #<%= @order.id %></h1>
+            <p class="orders-muted mb-0"><%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+          </div>
+        </div>
       </div>
-      <%= link_to @order.receipt.pdf_url, class: "btn btn-gold btn-sm", target: "_blank" do %>
-        <i class="bi bi-download me-1"></i> View PDF
-      <% end %>
-			<%= button_to generate_receipt_restaurant_order_path(@restaurant, @order), method: :post, class: "btn btn-gold btn-sm" do %>
-        <i class="bi bi-printer me-1"></i> Generate PDF (Sidekiq)
-      <% end %>
+      <div class="d-flex align-items-center gap-2">
+        <span class="order-pill order-pill-<%= @order.status %> order-pill-large"><%= @order.status.humanize %></span>
+        <span class="payment-pill payment-pill-<%= @order.payment_status %>"><%= @order.payment_status.humanize %></span>
+      </div>
     </div>
-  <% else %>
-    <!-- If the receipt hasn't been generated yet -->
-    <div class="text-center py-3">
-      <small>No receipt generated yet.</small><br>
-      <%= button_to generate_receipt_restaurant_order_path(@restaurant, @order), method: :post, class: "btn btn-gold btn-sm" do %>
-        <i class="bi bi-printer me-1"></i> Generate PDF (Sidekiq)
-      <% end %>
+
+    <div class="row g-4">
+      <div class="col-12 col-xl-8">
+        <section class="order-detail-panel mb-4">
+          <div class="detail-panel-header"><div><p class="orders-eyebrow mb-1">Ticket</p><h2 class="h5 mb-0">Order items</h2></div><span class="orders-muted"><%= pluralize(@order.order_items.size, "item") %></span></div>
+          <div class="detail-items">
+            <% if @order.order_items.any? %>
+              <% @order.order_items.each do |item| %>
+                <div class="detail-item">
+                  <div class="detail-item-quantity"><%= item.quantity %>×</div>
+                  <div class="flex-grow-1"><strong><%= item.menu.name %></strong><small class="orders-muted"><%= item.menu.category %></small></div>
+                  <span class="orders-muted">₱<%= number_with_precision(item.unit_price || 0, precision: 2) %></span>
+                  <strong>₱<%= number_with_precision(item.subtotal || 0, precision: 2) %></strong>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="order-empty compact"><i class="bi bi-basket"></i><p class="orders-muted mb-0">No items have been added to this order.</p></div>
+            <% end %>
+          </div>
+          <div class="detail-total"><span>Order total</span><strong>₱<%= number_with_precision(@order.total_amount || item_subtotal, precision: 2) %></strong></div>
+        </section>
+
+        <section class="order-detail-panel">
+          <div class="detail-panel-header"><div><p class="orders-eyebrow mb-1">Fulfilment</p><h2 class="h5 mb-0">Update order status</h2></div><i class="bi bi-lightning-charge orders-accent"></i></div>
+          <div class="workflow-actions">
+            <% if @order.pending? %>
+              <%= button_to restaurant_order_path(@restaurant, @order), method: :patch, params: { order: { status: "preparing" } }, class: "workflow-btn workflow-btn-blue" do %><i class="bi bi-play-fill"></i><span><strong>Start preparation</strong><small>Send this ticket to the kitchen</small></span><i class="bi bi-chevron-right ms-auto"></i><% end %>
+            <% elsif @order.preparing? %>
+              <%= button_to restaurant_order_path(@restaurant, @order), method: :patch, params: { order: { status: "ready" } }, class: "workflow-btn workflow-btn-green" do %><i class="bi bi-check2-circle"></i><span><strong>Mark as ready</strong><small>Notify the front of house</small></span><i class="bi bi-chevron-right ms-auto"></i><% end %>
+            <% elsif @order.ready? %>
+              <%= button_to restaurant_order_path(@restaurant, @order), method: :patch, params: { order: { status: "completed" } }, class: "workflow-btn workflow-btn-gold" do %><i class="bi bi-bag-check"></i><span><strong>Complete order</strong><small>Close this kitchen ticket</small></span><i class="bi bi-chevron-right ms-auto"></i><% end %>
+            <% else %>
+              <div class="workflow-complete"><i class="bi bi-check-circle"></i><span>This order is <strong><%= @order.status %></strong>.</span></div>
+            <% end %>
+          </div>
+        </section>
+      </div>
+
+      <div class="col-12 col-xl-4">
+        <section class="order-detail-panel detail-sidebar mb-4">
+          <div class="detail-panel-header"><div><p class="orders-eyebrow mb-1">Guest information</p><h2 class="h5 mb-0">Order context</h2></div></div>
+          <div class="context-list">
+            <div><i class="bi bi-person"></i><span><small class="orders-muted">Guest</small><strong><%= customer_name %></strong></span></div>
+            <div><i class="bi bi-table"></i><span><small class="orders-muted">Table</small><strong><%= @order.table&.table_number.present? ? "Table #{@order.table.table_number}" : "No table assigned" %></strong></span></div>
+            <% if @order.reservation&.phone.present? %><div><i class="bi bi-telephone"></i><span><small class="orders-muted">Phone</small><strong><%= @order.reservation.phone %></strong></span></div><% end %>
+            <div><i class="bi bi-credit-card"></i><span><small class="orders-muted">Payment</small><strong><%= @order.payment&.method.presence || "Not recorded" %></strong></span></div>
+          </div>
+        </section>
+
+        <section class="order-detail-panel receipt-panel">
+          <div class="detail-panel-header"><div><p class="orders-eyebrow mb-1">Documentation</p><h2 class="h5 mb-0">Receipt</h2></div><i class="bi bi-file-earmark-pdf orders-accent"></i></div>
+          <% if @order.receipt.present? %>
+            <div class="receipt-ready"><i class="bi bi-check-circle"></i><div><strong>Receipt generated</strong><small class="orders-muted"><%= @order.receipt.generated_at&.strftime('%b %d, %I:%M %p') %></small></div></div>
+            <%= link_to @order.receipt.pdf_url, class: "receipt-btn", target: "_blank" do %><i class="bi bi-download me-2"></i> View PDF<% end %>
+          <% else %>
+            <p class="orders-muted small">Generate a PDF receipt for this order.</p>
+          <% end %>
+          <%= button_to generate_receipt_restaurant_order_path(@restaurant, @order), method: :post, class: "receipt-btn receipt-btn-secondary" do %><i class="bi bi-printer me-2"></i> <%= @order.receipt.present? ? "Generate again" : "Generate receipt" %><% end %>
+        </section>
+      </div>
     </div>
-  <% end %>
+  </div>
 </div>

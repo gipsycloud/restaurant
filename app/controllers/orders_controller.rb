@@ -3,7 +3,7 @@ class OrdersController < ApplicationController
 	before_action :set_restaurant
 
 	def index
-		@orders = @restaurant.orders.includes(:order_items, :table, :payment)
+		@orders = @restaurant.orders.includes(:order_items, :table, :payment, order_items: :menu)
 		@orders = @orders.where(status: params[:status]) if params[:status].present?
 		@orders = @orders.where(payment_status: params[:payment_status]) if params[:payment_status].present?
 		@orders = @orders.where("created_at >= ?", params[:from_date]) if params[:from_date].present?
@@ -57,7 +57,7 @@ class OrdersController < ApplicationController
 	end
 
 	def set_order
-		@order = Order.find(params[:id])
+		@order = Order.includes(:table, :reservation, :payment, :receipt, order_items: :menu).find(params[:id])
 	end
 
 	def order_params

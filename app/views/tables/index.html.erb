@@ -1,41 +1,75 @@
-<!-- app/views/admin/tables/index.html.erb -->
 <% content_for :title, "Tables Management" %>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <div>
-    <h4 class="mb-0 text-white"><i class="bi bi-grid-3x3-gap text-gold me-2"></i>Tables</h4>
-    <small class="text-secondary">Manage restaurant floor plan and availability</small>
-  </div>
-</div>
+<% available_tables = @tables.count(&:available?) %>
+<% reserved_tables = @tables.count(&:reserved?) %>
+<% occupied_tables = @tables.count(&:occupied?) %>
 
-<!-- Legend -->
-<div class="d-flex gap-3 mb-4">
-  <small><span class="badge bg-success">Available</span></small>
-  <small><span class="badge bg-warning text-dark">Reserved</span></small>
-  <small><span class="badge bg-danger">Occupied</span></small>
-</div>
-
-<!-- Tables Grid -->
-<div class="row g-3">
-  <% @tables.each do |table| %>
-    <div class="col-lg-3 col-md-4 col-sm-6">
-      <div class="card bg-dark-custom border-0 h-100">
-        <div class="card-body text-center py-4">
-          <h2 class="text-white mb-2">T<%= table.table_number %></h2>
-          <p class="text-muted mb-2"><i class="bi bi-people me-1"></i> <%= table.capacity %> Pax</p>
-          
-          <span class="badge <%= table.status == 'available' ? 'bg-success' : (table.status == 'occupied' ? 'bg-danger' : 'bg-warning text-dark') %> fs-6">
-            <%= table.status.upcase %>
-          </span>
-
-          <!-- Show quick info based on Schema relations -->
-          <% if table.reservations.confirmed.exists? %>
-            <p class="text-warning mt-3 mb-0" style="font-size: 0.8rem;">
-              <i class="bi bi-clock me-1"></i> Reserved: <%= table.reservations.confirmed.last.reserved_at.strftime('%I:%M %p') %>
-            </p>
-          <% end %>
+<div class="tables-page">
+  <div class="container py-5">
+    <div class="tables-heading d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-4 mb-4">
+      <div>
+        <%= link_to restaurant_path(@restaurant), class: "tables-back-link" do %><i class="bi bi-arrow-left me-2"></i> <%= @restaurant.name %><% end %>
+        <div class="d-flex align-items-center gap-3 mt-4">
+          <div class="tables-title-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+          <div>
+            <p class="tables-eyebrow mb-1">Floor management</p>
+            <h1 class="mb-1">Tables</h1>
+            <p class="tables-muted mb-0">Monitor seating availability across the restaurant.</p>
+          </div>
         </div>
       </div>
+      <div class="table-summary-total"><strong><%= @tables.size %></strong><span>Total<br>tables</span></div>
     </div>
-  <% end %>
+
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-4"><div class="table-stat table-stat-available"><i class="bi bi-check-circle"></i><span>Available</span><strong><%= available_tables %></strong></div></div>
+      <div class="col-12 col-sm-4"><div class="table-stat table-stat-reserved"><i class="bi bi-calendar2-check"></i><span>Reserved</span><strong><%= reserved_tables %></strong></div></div>
+      <div class="col-12 col-sm-4"><div class="table-stat table-stat-occupied"><i class="bi bi-person-fill"></i><span>Occupied</span><strong><%= occupied_tables %></strong></div></div>
+    </div>
+
+    <div class="tables-toolbar d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+      <div>
+        <p class="tables-eyebrow mb-1">Floor plan</p>
+        <h2 class="h5 mb-0">All tables</h2>
+      </div>
+      <div class="tables-legend">
+        <span><i class="available-dot"></i> Available</span>
+        <span><i class="reserved-dot"></i> Reserved</span>
+        <span><i class="occupied-dot"></i> Occupied</span>
+      </div>
+    </div>
+
+    <% if @tables.any? %>
+      <div class="row g-3">
+        <% @tables.each do |table| %>
+          <% confirmed_reservation = table.reservations.select(&:confirmed?).max_by(&:reserved_at) %>
+          <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+            <article class="table-card table-card-<%= table.status %> h-100">
+              <div class="table-card-head">
+                <span class="table-number">T<%= table.table_number %></span>
+                <span class="table-status"><span></span><%= table.status.humanize %></span>
+              </div>
+              <div class="table-card-body">
+                <div class="table-capacity"><i class="bi bi-people"></i><strong><%= table.capacity %></strong><span>guest capacity</span></div>
+                <% if confirmed_reservation %>
+                  <div class="table-note table-note-reserved"><i class="bi bi-clock"></i><span>Reserved for <strong><%= confirmed_reservation.reserved_at.strftime('%I:%M %p') %></strong></span></div>
+                <% elsif table.occupied? %>
+                  <div class="table-note table-note-occupied"><i class="bi bi-person-fill"></i><span>Currently in service</span></div>
+                <% else %>
+                  <div class="table-note table-note-available"><i class="bi bi-check2"></i><span>Ready for guests</span></div>
+                <% end %>
+              </div>
+              <div class="table-card-footer">
+                <%= link_to restaurant_table_path(@restaurant, table), class: "table-view-link" do %>
+                  View table <i class="bi bi-arrow-up-right"></i>
+                <% end %>
+              </div>
+            </article>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="tables-empty"><i class="bi bi-grid-3x3-gap"></i><h2 class="h5">No tables configured</h2><p class="tables-muted mb-0">Add tables to start managing your restaurant floor plan.</p></div>
+    <% end %>
+  </div>
 </div>

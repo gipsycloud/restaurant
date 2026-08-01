@@ -1,31 +1,60 @@
-# <% content_for :title, "Restaurants" %>
+<% content_for :title, "Restaurants" %>
 
-# <section class="py-5 mt-5">
-#   <div class="container py-4">
-#     <div class="d-flex align-items-end justify-content-between gap-3 mb-4">
-#       <div>
-#         <p class="text-uppercase text-muted small mb-1">Directory</p>
-#         <h1 class="h2 fw-bold mb-0">All restaurants</h1>
-#       </div>
-#       <span class="text-muted"><%= pluralize(@restaurants.size, "restaurant") %></span>
-#     </div>
+<div class="restaurants-directory">
+  <div class="container py-5">
+    <section class="directory-hero mb-5">
+      <div>
+        <p class="directory-eyebrow mb-2"><i class="bi bi-building me-2"></i>Restaurant network</p>
+        <h1>Choose a <span>restaurant</span></h1>
+        <p class="directory-intro mb-0">Manage daily operations, orders, tables, and menus from one place.</p>
+      </div>
+      <div class="directory-count"><strong><%= @restaurants.size %></strong><span><%= @restaurants.size == 1 ? "location" : "locations" %><br>available</span></div>
+    </section>
 
-#     <div class="row g-4">
-#       <% @restaurants.each do |restaurant| %>
-#         <div class="col-12 col-md-6 col-xl-4">
-#           <div class="card h-100 border-0 shadow-sm">
-#             <div class="card-body d-flex flex-column">
-#               <h2 class="h5 fw-bold mb-3"><%= restaurant.name %></h2>
-#               <p class="mb-2 text-muted"><%= restaurant.address %></p>
-#               <p class="mb-4 text-muted"><%= restaurant.phone %></p>
+    <% if @restaurants.any? %>
+      <div class="directory-toolbar d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+        <div>
+          <p class="directory-eyebrow mb-1">Your locations</p>
+          <h2 class="h5 mb-0">All restaurants</h2>
+        </div>
+        <span class="directory-muted small"><i class="bi bi-sort-alpha-down me-1"></i> Sorted alphabetically</span>
+      </div>
 
-#               <div class="mt-auto">
-#                 <%= link_to "View details", restaurant_path(restaurant), class: "btn btn-dark" %>
-#               </div>
-#             </div>
-#           </div>
-#         </div>
-#       <% end %>
-#     </div>
-#   </div>
-# </section>
+      <div class="row g-4">
+        <% @restaurants.each do |restaurant| %>
+          <div class="col-12 col-md-6 col-xl-4">
+            <article class="restaurant-card h-100">
+              <div class="restaurant-card-top">
+                <div class="restaurant-avatar"><%= restaurant.name.first.upcase %></div>
+                <span class="restaurant-open"><span></span> Active</span>
+              </div>
+              <div class="restaurant-card-body">
+                <p class="directory-eyebrow mb-2">Dining location</p>
+                <h2><%= restaurant.name %></h2>
+                <div class="restaurant-contact">
+                  <p><i class="bi bi-geo-alt"></i><span><%= restaurant.address %></span></p>
+                  <p><i class="bi bi-telephone"></i><span><%= restaurant.phone %></span></p>
+                </div>
+                <div class="restaurant-meta">
+                  <span><i class="bi bi-grid-3x3-gap"></i><%= restaurant.tables.size %> tables</span>
+                  <span><i class="bi bi-journal-text"></i><%= restaurant.menus.size %> menu items</span>
+                </div>
+              </div>
+              <div class="restaurant-card-footer">
+                <%= link_to restaurant_path(restaurant), class: "restaurant-view-link" do %>
+                  Open dashboard <i class="bi bi-arrow-up-right"></i>
+                <% end %>
+              </div>
+            </article>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="directory-empty">
+        <div class="restaurant-avatar"><i class="bi bi-shop"></i></div>
+        <h2 class="h4">No restaurants yet</h2>
+        <p class="directory-muted mb-0">Restaurant locations will appear here once they are added.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

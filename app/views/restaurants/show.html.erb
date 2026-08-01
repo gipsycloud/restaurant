@@ -1,93 +1,123 @@
-<!-- Page Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <div>
-    <h2 class="mb-0"><i class="bi bi-speedometer2 me-2"></i><%= @restaurant.name %></h2>
-    <span class="text-muted"><i class="bi bi-geo-alt me-1"></i><%= @restaurant.address %></span>
-  </div>
-  <span class="badge bg-dark fs-6 px-3 py-2">POS Dashboard</span>
-</div>
+<% content_for :title, @restaurant.name %>
 
-<!-- Stats Cards Row -->
-<div class="row g-3 mb-4">
-  <!-- Today's Orders -->
-  <div class="col-md-3">
-    <div class="card border-0 shadow-sm bg-primary text-white">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
+<% recent_orders = @restaurant.orders.includes(:table).order(created_at: :desc).limit(5) %>
+<% occupied_percentage = @total_tables.zero? ? 0 : ((@occupied_tables.to_f / @total_tables) * 100).round %>
+
+<div class="restaurant-dashboard">
+  <div class="container py-5">
+    <div class="dashboard-heading d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-4 mb-5">
+      <div>
+        <%= link_to restaurants_path, class: "dashboard-back-link" do %>
+          <i class="bi bi-arrow-left me-2"></i> All restaurants
+        <% end %>
+        <div class="d-flex align-items-center gap-3 mt-3">
+          <div class="restaurant-mark"><i class="bi bi-shop-window"></i></div>
           <div>
-            <h6 class="card-title mb-1 opacity-75">Today's Orders</h6>
-            <h2 class="mb-0 fw-bold"><%= @today_orders.count %></h2>
+            <p class="dashboard-eyebrow mb-1">Operations overview</p>
+            <h1 class="mb-1"><%= @restaurant.name %></h1>
+            <p class="dashboard-muted mb-0"><i class="bi bi-geo-alt me-1"></i><%= @restaurant.address %></p>
           </div>
-          <i class="bi bi-receipt fs-1 opacity-50"></i>
+        </div>
+      </div>
+      <div class="text-lg-end">
+        <span class="live-status"><span></span> Live dashboard</span>
+        <p class="dashboard-muted small mb-0 mt-2"><i class="bi bi-telephone me-1"></i><%= @restaurant.phone %></p>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="dashboard-stat dashboard-stat-gold">
+          <div class="stat-icon"><i class="bi bi-receipt"></i></div>
+          <p>Today's orders</p>
+          <strong><%= @today_orders.count %></strong>
+          <small>Orders received today</small>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="dashboard-stat dashboard-stat-blue">
+          <div class="stat-icon"><i class="bi bi-currency-dollar"></i></div>
+          <p>Today's revenue</p>
+          <strong>$<%= number_with_precision(@today_revenue, precision: 2) %></strong>
+          <small>Paid orders only</small>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="dashboard-stat dashboard-stat-green">
+          <div class="stat-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+          <p>Available tables</p>
+          <strong><%= @available_tables %><span> / <%= @total_tables %></span></strong>
+          <small><%= occupied_percentage %>% currently occupied</small>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="dashboard-stat dashboard-stat-purple">
+          <div class="stat-icon"><i class="bi bi-calendar2-check"></i></div>
+          <p>Reservations</p>
+          <strong><%= @restaurant.reservations.where(created_at: Date.current.all_day).count %></strong>
+          <small>Scheduled for today</small>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Available Tables -->
-  <div class="col-md-3">
-    <div class="card border-0 shadow-sm bg-info text-white">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h6 class="card-title mb-1 opacity-75">Available Tables</h6>
-            <h2 class="mb-0 fw-bold"><%= @available_tables %> / <%= @total_tables %></h2>
+    <div class="row g-4">
+      <div class="col-12 col-xl-8">
+        <section class="dashboard-panel h-100">
+          <div class="panel-header">
+            <div>
+              <p class="dashboard-eyebrow mb-1">Latest activity</p>
+              <h2 class="h4 mb-0">Recent orders</h2>
+            </div>
+            <%= link_to restaurant_orders_path(@restaurant), class: "panel-link" do %>
+              View all <i class="bi bi-arrow-up-right ms-1"></i>
+            <% end %>
           </div>
-          <i class="bi bi-table fs-1 opacity-50"></i>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-3">
-    <%= link_to restaurant_tables_path(@restaurant), class: "btn btn-outline-info w-100 py-3 shadow-sm" do %>
-      <i class="bi bi-grid-3x3-gap fs-4 d-block mb-1"></i> View Tables
-    <% end %>
-  </div>
-
-  <div class="col-md-3">
-    <%= link_to restaurant_orders_path(@restaurant), class: "btn btn-outline-dark w-100 py-3 shadow-sm" do %>
-      <i class="bi bi-list-check fs-4 d-block mb-1"></i> All Orders
-    <% end %>
-  </div>
-</div>
-
-<!-- Quick Action Buttons -->
-<div class="row g-3 mb-4">
-  <div class="col-md-3">
-    <%#= link_to restaurant_users_path(@restaurant), class: "btn btn-outline-success w-100 py-3 shadow-sm" do %>
-      <!-- i class="bi bi-person-gear fs-4 d-block mb-1"></i> Manage Staff -->
-    <%# end %>
-  </div>
-</div>
-
-  <div class="col-md-6">
-    <div class="card shadow-sm border-0 h-100">
-      <div class="card-header bg-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="bi bi-clock-history me-2 text-dark"></i>Recent Orders</h5>
-        <%= link_to "View All", restaurant_orders_path(@restaurant), class: "btn btn-sm btn-outline-dark" %>
-      </div>
-      <div class="card-body p-0">
-        <ul class="list-group list-group-flush">
-          <% recent_orders = @restaurant.orders.order(created_at: :desc).limit(5) %>
-          <% if recent_orders.empty? %>
-            <li class="list-group-item text-center text-muted py-4">No orders yet</li>
+          <% if recent_orders.any? %>
+            <div class="order-list">
+              <% recent_orders.each do |order| %>
+                <div class="order-row">
+                  <div class="order-number"><i class="bi bi-receipt"></i></div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2">
+                      <strong>Order #<%= order.id %></strong>
+                      <span class="order-status order-status-<%= order.status %>"><%= order.status.humanize %></span>
+                    </div>
+                    <small class="dashboard-muted">Table <%= order.table.table_number %> · <%= time_ago_in_words(order.created_at) %> ago</small>
+                  </div>
+                  <strong class="order-total">$<%= number_with_precision(order.total_amount, precision: 2) %></strong>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="empty-state"><i class="bi bi-inbox"></i><p>No orders have been placed yet.</p></div>
           <% end %>
-          <% recent_orders.each do |order| %>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                <strong>Order #<%= order.id %></strong><br>
-                <small class="text-muted">Table <%= order.table.table_number %> &bull; <%= time_ago_in_words(order.created_at) %> ago</small>
-              </div>
-              <div class="text-end">
-                <strong>$<%= order.total_amount.round(2) %></strong><br>
-                <span class="badge <%= order.payment_status == 'paid' ? 'bg-success' : 'bg-warning text-dark' %>">
-                  <%#= order.payment_status.capitalize %>
-                </span>
-              </div>
-            </li>
-          <% end %>
-        </ul>
+        </section>
+      </div>
+
+      <div class="col-12 col-xl-4">
+        <section class="dashboard-panel quick-actions h-100">
+          <div class="panel-header">
+            <div>
+              <p class="dashboard-eyebrow mb-1">Shortcuts</p>
+              <h2 class="h4 mb-0">Quick actions</h2>
+            </div>
+            <i class="bi bi-lightning-charge panel-accent"></i>
+          </div>
+          <div class="action-grid">
+            <%= link_to restaurant_tables_path(@restaurant), class: "dashboard-action" do %>
+              <i class="bi bi-grid-3x3-gap"></i><span>Manage tables</span><i class="bi bi-chevron-right arrow"></i>
+            <% end %>
+            <%= link_to restaurant_orders_path(@restaurant), class: "dashboard-action" do %>
+              <i class="bi bi-list-check"></i><span>View all orders</span><i class="bi bi-chevron-right arrow"></i>
+            <% end %>
+            <%= link_to restaurant_menu_index_path(@restaurant), class: "dashboard-action" do %>
+              <i class="bi bi-journal-text"></i><span>Manage menu</span><i class="bi bi-chevron-right arrow"></i>
+            <% end %>
+            <%= link_to restaurant_reservations_path(@restaurant), class: "dashboard-action" do %>
+              <i class="bi bi-calendar2-week"></i><span>Reservations</span><i class="bi bi-chevron-right arrow"></i>
+            <% end %>
+          </div>
+        </section>
       </div>
     </div>
   </div>
